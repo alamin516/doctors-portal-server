@@ -160,6 +160,13 @@ async function run() {
 
         })
 
+        app.delete('/booking/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) }
+            const result = await bookingsCollection.deleteOne(query)
+            res.send(result)
+        })
+
         app.post('/bookings', async (req, res) => {
             const booking = req.body;
             console.log(booking);
@@ -233,7 +240,7 @@ async function run() {
             res.status(403).send({ accessToken: '' })
         });
 
-        app.get('/users', async (req, res) => {
+        app.get('/users', verifyAdmin, async (req, res) => {
             const query = {};
             const users = await usersCollection.find(query).toArray();
             res.send(users);
@@ -265,6 +272,8 @@ async function run() {
             const result = await usersCollection.updateOne(filter, updatedDoc, options);
             res.send(result);
         });
+
+
 
         app.get('/doctors', verifyJWT, verifyAdmin, async (req, res) => {
             const query = {};
